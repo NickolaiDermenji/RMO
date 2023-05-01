@@ -69,7 +69,7 @@
 </head>
 <body>
   <div id="ranges" style="position: absolute; left: 50%; transform: translate(-50%, 0%); display: none;">
-    <span>In - </span>
+    <span>Center - </span>
     <p id="in" style="display: inline-block;"></p>
     <span style="display: inline-block; width: 20px;"></span>
     <span>Before - </span>
@@ -84,7 +84,7 @@
     <span>AfterAfter - </span>
     <p id="afaf"style="display: inline-block;"></p>
   </div>
-  <button id="startButton" onclick="startMove()">Начать</button>
+  <button id="startButton" onclick="startMove()">Start</button>
   <div id="rangeBefore"></div>
   <div id="rangeAfter"></div>
   <div id="blue-rectangle"></div>
@@ -94,27 +94,27 @@
   </div>
   <div id="resultTable" style="display: none; justify-content: end; align-items: center; flex-direction: column; background-color: white; height: 700px; ">
     <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; width: 400px; border: lightgrey 1px solid;">
-      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 10px; font-weight: bold; border: lightgrey 1px solid;">Диапазон</div>
-      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 10px; font-weight: bold; border: lightgrey 1px solid;">Ср. зн-е</div>
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 10px; font-weight: bold; border: lightgrey 1px solid;">Ranges</div>
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 10px; font-weight: bold; border: lightgrey 1px solid;">Middle values</div>
     </div>
     <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; width: 400px; white-space: nowrap;">
-      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">Перед перед</div>
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">Before Before</div>
       <div id="bbt" style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">-</div>
     </div>
     <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; width: 400px; white-space: nowrap;">
-      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">Перед</div>
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">Before</div>
       <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;"id="bt">-</div>
     </div>
     <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; width: 400px; white-space: nowrap;">
-      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">Центр</div>
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">Center</div>
       <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;"id="it">-</div>
     </div>
     <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; width: 400px; white-space: nowrap;">
-      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">После</div>
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">After</div>
       <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;"id="at">-</div>
     </div>
     <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; width: 400px; white-space: nowrap;">
-      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">После после</div>
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">After After</div>
       <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;"id="aat">-</div>
     </div>
     <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; width: 400px; white-space: nowrap;">
@@ -126,10 +126,9 @@
       <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;"id="maxValue">-</div>
     </div>
     <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; width: 400px; white-space: nowrap;">
-      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">standartDeviation</div>
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">Standart Deviation</div>
       <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;"id="standartDeviation">-</div>
     </div>
-
   </div>
   <script>
     // https://www.youtube.com/watch?v=IKOJTdtp9kA
