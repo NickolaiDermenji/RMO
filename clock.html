@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Синий прямоугольник</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    #clock {
+      width: 350px;
+      height: 350px;
+      border-radius: 50%;
+      background-color: white;
+      box-shadow: 0px 0px 10px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    #hand {
+      width: 3px;
+      height: 160px;
+      background-color: black;
+      position: absolute;
+      left: 50%;
+      bottom: 50%;
+      transform-origin: bottom center;
+      transform: translate(-50%, 0%);
+      border-radius: 100% 100% 0 0;
+    }
+
+    #centerPoint{
+      width: 3px;
+      height: 20px;
+      background-color: white;
+      position: absolute;
+      left: 50%;
+      transform-origin: top center;
+      transform: translate(-50%, 0%);
+    }
+
+    #startButton{
+      position: absolute;
+      top: 10%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100px;
+      height: 50px;
+      background-color: grey;
+      border-radius: 20px;
+      color: white;
+      border-color: snow;
+    }
+    #rangeBefore{
+      position: absolute;
+      width: 50%;
+      height: 50%;
+      background-color: lightblue;
+      border-radius: 100% 0 0 0;
+      opacity: 0.5;
+    }
+    #rangeAfter{
+      position: absolute;
+      left: 50%;
+      width: 50%;
+      height: 50%;
+      background-color: lightcoral;
+      border-radius: 0 100% 0 0;
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+  <div id="ranges" style="position: absolute; left: 50%; transform: translate(-50%, 0%); display: none;">
+    <span>In - </span>
+    <p id="in" style="display: inline-block;"></p>
+    <span style="display: inline-block; width: 20px;"></span>
+    <span>Before - </span>
+    <p id="bf" style="display: inline-block;"></p>
+    <span style="display: inline-block; width: 20px;"></span>
+    <span>After - </span>
+    <p id="af"style="display: inline-block;"></p>
+    <span style="display: inline-block; width: 20px;"></span>
+    <span>BeforeBefore - </span>
+    <p id="bfbf" style="display: inline-block;"></p>
+    <span style="display: inline-block; width: 20px;"></span>
+    <span>AfterAfter - </span>
+    <p id="afaf"style="display: inline-block;"></p>
+  </div>
+  <button id="startButton" onclick="startMove()">Начать</button>
+  <div id="clock">
+    <div id="rangeBefore"></div>
+    <div id="rangeAfter"></div>
+    <div id="centerPoint"></div>
+    <div id="hand"></div>
+  </div>
+  </div>
+  <div id="resultTable" style="display: none; justify-content: end; align-items: flex-start; flex-direction: column; background-color: white; height: 650px; ">
+    <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; width: 400px; border: lightgrey 1px solid;">
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 10px; font-weight: bold; border: lightgrey 1px solid;">Диапазон</div>
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 10px; font-weight: bold; border: lightgrey 1px solid;">Ср. зн-е</div>
+    </div>
+    <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; width: 400px; white-space: nowrap;">
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">Перед перед</div>
+      <div id="bbt" style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">-</div>
+    </div>
+    <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; width: 400px; white-space: nowrap;">
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">Перед</div>
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;"id="bt">-</div>
+    </div>
+    <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; width: 400px; white-space: nowrap;">
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">Центр</div>
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;"id="it">-</div>
+    </div>
+    <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; width: 400px; white-space: nowrap;">
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">После</div>
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;"id="at">-</div>
+    </div>
+    <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; width: 400px; white-space: nowrap;">
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">После после</div>
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;"id="aat">-</div>
+    </div>
+  </div>
+  <script>
+    // https://www.youtube.com/watch?v=IKOJTdtp9kA
+    var rangeBefore = document.getElementById("rangeBefore");
+    var rangeAfter =document.getElementById("rangeAfter");
+
+    const hand = document.getElementById("hand");
+    const step = 0.8;
+    const intervalTime = 0.2;
+    let angle = 0;
+
+    var isMoving = false;
+    var direction = 1; // left - 0; right - 1;
+    var AmountRangeIn = null;
+    var AmountRangeBefore = null;
+    var AmountRangeAfter = null;
+    var AmountRangeAfterAfter = null;
+    var AmountRangeBeforeBefore = null;
+
+    var stopExperimentNumber = 0;
+    var amountOfTrials = 20; // количество испытаний
+
+    // время испытаний в различных диапозонах
+    var beforeBeforeTimeReaction = [];
+    var beforeTimeReaction = [];
+    var inTimeReaction = [];
+    var afterTimeReaction = [];
+    var afterAfterTimeReaction = [];
+    let startTime = null;
+    let reactionTime = null;
+
+    function startMove() {
+      if (!isMoving) {
+        isMoving = true;
+        startTime = new Date().getTime();
+        const interval = setInterval(moveStimulus, intervalTime);
+        document.getElementById("startButton").style.display = 'none';
+        document.getElementById("ranges").style.display = 'block';
+         document.getElementById("resultTable").style.display = 'flex';
+      }
+    }
+
+    function moveStimulus(){
+      if(stopExperimentNumber >= amountOfTrials){
+        clearInterval(interval);
+        return;
+      }
+      if (direction == 0) {
+          angle -= step;
+          hand.style.transform = `rotate(${angle}deg)`;
+      }
+      else {
+          angle += step;
+          hand.style.transform = `rotate(${angle}deg)`;
+      } 
+    }
+
+    window.addEventListener("mousedown", function(event) {
+      if (event.button === 0 && isMoving && stopExperimentNumber < amountOfTrials) {
+        reactionTime = Date.now() - startTime;
+        startTime = new Date().getTime();
+        addResult();
+
+        direction = Math.round(Math.random());
+        if(direction == 0){
+          angle = 0;
+          rangeBefore.style.backgroundColor = "lightcoral";
+          rangeAfter.style.backgroundColor = "lightblue";
+        }
+        else{
+          angle = 0;
+          rangeBefore.style.backgroundColor = "lightblue";
+          rangeAfter.style.backgroundColor = "lightcoral";
+        }
+      }
+    });
+
+    function addResult(){
+      if(direction == 0){
+        if (angle <= -358 && angle >= -362){
+        AmountRangeIn++;
+        inTimeReaction.push(reactionTime);
+        }
+        else if(angle <= -270 && angle > -358){
+          AmountRangeBefore++;
+          beforeTimeReaction.push(reactionTime);
+        }
+        else if (angle < -362 && angle >= -450){
+          AmountRangeAfter++;
+          afterTimeReaction.push(reactionTime);
+        }
+        else if (angle <= 0 && angle > -270){
+          AmountRangeBeforeBefore++;
+          beforeBeforeTimeReaction.push(reactionTime);
+        }
+        else if (angle < -450 && angle >= -720){
+          AmountRangeAfterAfter++;
+          afterAfterTimeReaction.push(reactionTime);
+        }
+      } 
+      else if(direction == 1){
+        if (angle >= 358 && angle <= 362){
+        AmountRangeIn++;
+        inTimeReaction.push(reactionTime);
+        }
+        else if(angle >= 270 && angle < 358){
+          AmountRangeBefore++;
+          beforeTimeReaction.push(reactionTime);
+        }
+        else if (angle > 362 && angle <= 450){
+          AmountRangeAfter++;
+          afterTimeReaction.push(reactionTime);
+        }
+        else if (angle >= 0 && angle < 270){
+          AmountRangeBeforeBefore++;
+          beforeBeforeTimeReaction.push(reactionTime);
+        }
+        else if (angle > 450 && angle <= 720){
+          AmountRangeAfterAfter++;
+          afterAfterTimeReaction.push(reactionTime);
+        }
+      }
+      stopExperimentNumber++;
+      document.getElementById("in").innerHTML = AmountRangeIn;
+      document.getElementById("bf").innerHTML = AmountRangeBefore;
+      document.getElementById("af").innerHTML = AmountRangeAfter;
+      document.getElementById("bfbf").innerHTML = AmountRangeBeforeBefore;
+      document.getElementById("afaf").innerHTML = AmountRangeAfterAfter;
+
+      document.getElementById("bbt").innerHTML = beforeBeforeTimeReaction.length == 0?'-':Math.round(beforeBeforeTimeReaction.reduce((a, b) => a + b, 0) / beforeBeforeTimeReaction.length);
+      document.getElementById("bt").innerHTML = beforeTimeReaction.length == 0?'-':Math.round(beforeTimeReaction.reduce((a, b) => a + b, 0) / beforeTimeReaction.length);
+      document.getElementById("it").innerHTML = inTimeReaction.length == 0?'-':Math.round(inTimeReaction.reduce((a, b) => a + b, 0) / inTimeReaction.length);
+      document.getElementById("at").innerHTML = afterTimeReaction.length == 0?'-':Math.round(afterTimeReaction.reduce((a, b) => a + b, 0) / afterTimeReaction.length);
+      document.getElementById("aat").innerHTML = afterAfterTimeReaction.length == 0?'-':Math.round(afterAfterTimeReaction.reduce((a, b) => a + b, 0) / afterAfterTimeReaction.length);
+    }
+  </script>
+</body>
+</html>
