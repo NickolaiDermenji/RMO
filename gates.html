@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Синий прямоугольник</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    #blue-rectangle {
+      position: absolute;
+      top: 50%;
+      left: 1320px;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 70px;
+      background-color: blue;
+    }
+    #rect {
+      position: absolute;
+      top: calc(50% - 70px);
+      transform: translate(0%, -50%);
+      width: 20px;
+      height: 70px;
+      background-color: grey;
+    }
+    #gates {
+      position: absolute;
+      top: 50%;
+      transform: translate(0%, -50%);
+      left: 400px;
+      width: 20px;
+      height: 100px;
+    }
+    #startButton{
+      position: absolute;
+      top: 10%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100px;
+      height: 50px;
+      background-color: grey;
+      border-radius: 20px;
+      color: white;
+      border-color: snow;
+    }
+    #rangeAfter{
+      position: absolute;
+      top: 50%;
+      left: 100px;
+      transform: translate(0%, -50%);
+      width: 300px;
+      height: 70px;
+      background-color: lightcoral;
+      opacity: 0.5;
+    }
+    #rangeBefore{
+      position: absolute;
+      top: 50%;
+      left: 420px;
+      transform: translate(0%, -50%);
+      width: 300px;
+      height: 70px;
+      background-color: lightblue;
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+  <div id="ranges" style="position: absolute; left: 50%; transform: translate(-50%, 0%); display: none;">
+    <span>In - </span>
+    <p id="in" style="display: inline-block;"></p>
+    <span style="display: inline-block; width: 20px;"></span>
+    <span>Before - </span>
+    <p id="bf" style="display: inline-block;"></p>
+    <span style="display: inline-block; width: 20px;"></span>
+    <span>After - </span>
+    <p id="af"style="display: inline-block;"></p>
+    <span style="display: inline-block; width: 20px;"></span>
+    <span>BeforeBefore - </span>
+    <p id="bfbf" style="display: inline-block;"></p>
+    <span style="display: inline-block; width: 20px;"></span>
+    <span>AfterAfter - </span>
+    <p id="afaf"style="display: inline-block;"></p>
+  </div>
+  <button id="startButton" onclick="startMove()">Начать</button>
+  <div id="rangeBefore"></div>
+  <div id="rangeAfter"></div>
+  <div id="blue-rectangle"></div>
+  <div id="gates">
+  <div id="rect"></div>
+  <div id="rect" style="top: calc(50% + 70px);"></div>
+  </div>
+  <div id="resultTable" style="display: none; justify-content: end; align-items: center; flex-direction: column; background-color: white; height: 650px; ">
+    <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; width: 400px; border: lightgrey 1px solid;">
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 10px; font-weight: bold; border: lightgrey 1px solid;">Диапазон</div>
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 10px; font-weight: bold; border: lightgrey 1px solid;">Ср. зн-е</div>
+    </div>
+    <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; width: 400px; white-space: nowrap;">
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">Перед перед</div>
+      <div id="bbt" style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">-</div>
+    </div>
+    <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; width: 400px; white-space: nowrap;">
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">Перед</div>
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;"id="bt">-</div>
+    </div>
+    <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; width: 400px; white-space: nowrap;">
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">Центр</div>
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;"id="it">-</div>
+    </div>
+    <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; width: 400px; white-space: nowrap;">
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">После</div>
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;"id="at">-</div>
+    </div>
+    <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; width: 400px; white-space: nowrap;">
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">После после</div>
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;"id="aat">-</div>
+    </div>
+  </div>
+  <script>
+    // https://www.youtube.com/watch?v=IKOJTdtp9kA
+    var blueRectangle = document.getElementById("blue-rectangle");
+    var gates = document.getElementById("gates");
+    var rangeBefore = document.getElementById("rangeBefore");
+    var rangeAfter = document.getElementById("rangeAfter");
+    var position = 1220;
+    const speed = 0.67;
+    const intervalTime = 10;
+    const distance = 1500;
+    var isMoving = false;
+    var direction = 0; // left - 0; right - 1;
+    var AmountRangeIn = null;
+    var AmountRangeBefore = null;
+    var AmountRangeAfter = null;
+    var AmountRangeAfterAfter = null;
+    var AmountRangeBeforeBefore = null;
+    var blockIn = null;
+    var blockBefore = null;
+    var blockBeforeLeft = null;
+    var blockBeforeRight = null;
+    var blockAfter = null;
+    var blockAfterLeft = null;
+    var blockAfterRight = null;
+    var blockBlueRect = null;
+    var blueRectangleLeft = null;
+    var blueRectangleRight = null;
+    var blockGates = null;
+    var gatesLeft = null;
+    var gatesRight = null;
+    var stopExperimentNumber = 0;
+    var amountOfTrials = 20; // количество испытаний
+
+    // время испытаний в различных диапозонах
+    var beforeBeforeTimeReaction = [];
+    var beforeTimeReaction = [];
+    var inTimeReaction = [];
+    var afterTimeReaction = [];
+    var afterAfterTimeReaction = [];
+    let startTime = null;
+    let reactionTime = null;
+
+
+    function moveStimulus(){
+      if(stopExperimentNumber >= amountOfTrials){return;}
+      if (direction == 0) {
+          position -= speed * intervalTime;
+        if(position >= distance || stopExperimentNumber >= amountOfTrials){
+          clearInterval(interval);
+        } else {
+          blueRectangle.style.left = position + 'px';
+        }
+      } else {
+          position += speed * intervalTime;
+          if(position >= distance){
+            clearInterval(interval);
+          } else {
+            blueRectangle.style.left = position + 'px';
+          }
+      } 
+    }
+
+    function startMove() {
+      if (!isMoving) {
+        isMoving = true;
+        startTime = new Date().getTime();
+        const interval = setInterval(moveStimulus, intervalTime);
+        document.getElementById("startButton").style.display = 'none';
+        document.getElementById("ranges").style.display = 'block';
+         document.getElementById("resultTable").style.display = 'flex';
+      }
+    }
+
+    window.addEventListener("mousedown", function(event) {
+      if (event.button === 0 && isMoving && stopExperimentNumber < amountOfTrials) {
+        reactionTime = Date.now() - startTime;
+        startTime = new Date().getTime();
+        blockBefore = document.querySelector("#rangeBefore");
+        blockBeforeLeft = blockBefore.offsetLeft;
+        blockBeforeRight = blockBeforeLeft + 300;
+        blockAfter = document.querySelector("#rangeAfter");
+        blockAfterLeft = blockAfter.offsetLeft;
+        blockAfterRight = blockAfterLeft + 300;
+        blockBlueRect = document.querySelector("#blue-rectangle");
+        blueRectangleLeft = blockBlueRect.offsetLeft;
+        blueRectangleRight = blueRectangleLeft;
+        blockGates = document.querySelector("#gates");
+        gatesLeft = blockGates.offsetLeft;
+        gatesRight = gatesLeft + 20;
+        addResult();
+
+        direction = Math.round(Math.random());
+        if(direction == 0){
+          position = 1320;
+          gates.style.left = 400 + 'px'; 
+          blueRectangle.style.left = 1320 + 'px';
+          rangeBefore.style.left = 420 + 'px';  
+          rangeAfter.style.left = 100 + 'px';
+        }
+        else{
+          position = 200;
+          gates.style.left = 1100 + 'px'; 
+          blueRectangle.style.left = 200 + 'px';
+          rangeBefore.style.left = 800 + 'px';  
+          rangeAfter.style.left = 1120 + 'px';
+        }
+      }
+    });
+
+    function addResult(){
+      if (blueRectangleLeft >= gatesLeft && blueRectangleRight <= gatesRight){
+        AmountRangeIn++;
+        inTimeReaction.push(reactionTime);
+      }
+      else if(blueRectangleLeft >= blockBeforeLeft && blueRectangleRight <= blockBeforeRight){
+        AmountRangeBefore++; 
+        beforeTimeReaction.push(reactionTime);
+      } 
+      else if(blueRectangleLeft >= blockAfterLeft && blueRectangleRight <= blockAfterRight){
+        AmountRangeAfter++; 
+        afterTimeReaction.push(reactionTime);
+      }
+      else if(direction == 0){
+        if(blueRectangleLeft > blockBeforeRight){
+          AmountRangeBeforeBefore++;
+          beforeBeforeTimeReaction.push(reactionTime);
+        }
+        else if (blueRectangleRight < blockAfterLeft){
+          AmountRangeAfterAfter++;
+          afterAfterTimeReaction.push(reactionTime);
+        }
+      } 
+      else if(direction == 1){
+        if(blueRectangleLeft > blockAfterRight){
+          AmountRangeAfterAfter++;
+          afterAfterTimeReaction.push(reactionTime);
+        }
+        else if (blueRectangleRight < blockBeforeLeft){
+          AmountRangeBeforeBefore++;
+          beforeBeforeTimeReaction.push(reactionTime);
+        }
+      }
+      stopExperimentNumber++;
+      document.getElementById("in").innerHTML = AmountRangeIn;
+      document.getElementById("bf").innerHTML = AmountRangeBefore;
+      document.getElementById("af").innerHTML = AmountRangeAfter;
+      document.getElementById("bfbf").innerHTML = AmountRangeBeforeBefore;
+      document.getElementById("afaf").innerHTML = AmountRangeAfterAfter;
+
+      document.getElementById("bbt").innerHTML = beforeBeforeTimeReaction.length == 0?'-':Math.round(beforeBeforeTimeReaction.reduce((a, b) => a + b, 0) / beforeBeforeTimeReaction.length);
+      document.getElementById("bt").innerHTML = beforeTimeReaction.length == 0?'-':Math.round(beforeTimeReaction.reduce((a, b) => a + b, 0) / beforeTimeReaction.length);
+      document.getElementById("it").innerHTML = inTimeReaction.length == 0?'-':Math.round(inTimeReaction.reduce((a, b) => a + b, 0) / inTimeReaction.length);
+      document.getElementById("at").innerHTML = afterTimeReaction.length == 0?'-':Math.round(afterTimeReaction.reduce((a, b) => a + b, 0) / afterTimeReaction.length);
+      document.getElementById("aat").innerHTML = afterAfterTimeReaction.length == 0?'-':Math.round(afterAfterTimeReaction.reduce((a, b) => a + b, 0) / afterAfterTimeReaction.length);
+    }
+  </script>
+</body>
+</html>
