@@ -123,6 +123,18 @@
       <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">После после</div>
       <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;"id="aat">-</div>
     </div>
+    <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; width: 400px; white-space: nowrap;">
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px; border-top: 1px solid;">Min</div>
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px; border-top: 1px solid;" id="minValue">-</div>
+    </div>
+    <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; width: 400px; white-space: nowrap;">
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">Max</div>
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;"id="maxValue">-</div>
+    </div>
+    <div style="display: flex; justify-content: center; align-items: center; flex-direction: row; width: 400px; white-space: nowrap;">
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;">standartDeviation</div>
+      <div style="color: deepskyblue; flex: 1; text-align: left; padding: 5px;"id="standartDeviation">-</div>
+    </div>
   </div>
   <script>
     // https://www.youtube.com/watch?v=IKOJTdtp9kA
@@ -257,6 +269,25 @@
       document.getElementById("it").innerHTML = inTimeReaction.length == 0?'-':Math.round(inTimeReaction.reduce((a, b) => a + b, 0) / inTimeReaction.length);
       document.getElementById("at").innerHTML = afterTimeReaction.length == 0?'-':Math.round(afterTimeReaction.reduce((a, b) => a + b, 0) / afterTimeReaction.length);
       document.getElementById("aat").innerHTML = afterAfterTimeReaction.length == 0?'-':Math.round(afterAfterTimeReaction.reduce((a, b) => a + b, 0) / afterAfterTimeReaction.length);
+
+      if (stopExperimentNumber == amountOfTrials) {
+      // объединяем все массивы в один
+      const allTimes = [...inTimeReaction, ...beforeTimeReaction, ...afterTimeReaction, ...beforeBeforeTimeReaction, ...afterAfterTimeReaction];
+
+      // находим минимальное и максимальное значения
+      const minTime = Math.min(...allTimes);
+      const maxTime = Math.max(...allTimes);
+
+      // находим среднеквадратичное значение
+      let sumSquaredDiffs = allTimes.reduce((acc, time) => acc + Math.pow((time - (allTimes.reduce((a, b) => a + b) / allTimes.length)), 2), 0);
+      let meanSquaredDiff = sumSquaredDiffs / allTimes.length;
+      let standardDeviation = Math.sqrt(meanSquaredDiff);
+
+      // выводим результаты в консоль
+      document.getElementById("minValue").innerHTML = minTime;
+      document.getElementById("maxValue").innerHTML = maxTime;
+      document.getElementById("standartDeviation").innerHTML = Math.round(standardDeviation);
+    }
     }
   </script>
 </body>
